@@ -9,12 +9,18 @@ var SHADDOW_SHIFT_Y = CLOUD_Y + 10;
 var SUBSTRATE_OFFSET = 3;
 var OFFSET_X = CLOUD_WIDTH / 20;
 var OFFSET_Y = CLOUD_HEIGHT / 5 - 5;
-var OFFSET_TEXT = 20;
+var OFFSET_TEXT = 21;
 
+var PADDING_ON_TOP = 85;
 var BAR_HEIGHT = CLOUD_HEIGHT / 1.8;
 var BAR_WIDTH = CLOUD_WIDTH / 10.5;
 var BAR_GAP = CLOUD_WIDTH / 8.4;
 
+var MAX_BLUE = 260;
+var MIN_BLUE = 200;
+var MAX_SATURATED = 70;
+var MIN_SATURATED = 30;
+var PURE_BRIGHT_COLOR = 50;
 var SPECIAL_COLOR = 'rgba(255, 0, 0, 1)';
 
 var renderCloud = function (ctx, x, y, width, height, color) {
@@ -56,9 +62,9 @@ var getGradient = function (ctx) {
 };
 
 var getRandomColor = function () {
-  var h = Math.floor(Math.random() * (260 - 200)) + 200;
-  var s = Math.floor(Math.random() * (70 - 30)) + 30;
-  var l = 50;
+  var h = Math.floor(Math.random() * (MAX_BLUE - MIN_BLUE)) + MIN_BLUE;
+  var s = Math.floor(Math.random() * (MAX_SATURATED - MIN_SATURATED)) + MIN_SATURATED;
+  var l = PURE_BRIGHT_COLOR;
   return ('hsl(' + h + ',' + s + '%,' + l + '%)');
 };
 
@@ -72,18 +78,18 @@ window.renderStatistics = function (ctx, players, times) {
   renderHeaderMessage(ctx, 2);
 
   for (var i = 0; i < players.length; i++) {
-    var currentStartX = CLOUD_X + (BAR_WIDTH + BAR_GAP) * i + 55;
+    var currentStartX = CLOUD_X + (BAR_WIDTH + BAR_GAP) * i + BAR_GAP;
     var currentStartY = BAR_HEIGHT - (BAR_HEIGHT * times[i]) / maxTime;
 
     ctx.fillStyle = '#000000';
-    ctx.fillText(players[i], currentStartX, CLOUD_Y + CLOUD_HEIGHT - 25);
+    ctx.fillText(players[i], currentStartX, CLOUD_Y + CLOUD_HEIGHT - OFFSET_TEXT);
 
-    ctx.fillText(Math.floor(times[i]), currentStartX, currentStartY + 85);
+    ctx.fillText(Math.floor(times[i]), currentStartX, currentStartY + PADDING_ON_TOP);
 
     ctx.fillStyle = getRandomColor();
     if (players[i] === 'Вы') {
       ctx.fillStyle = SPECIAL_COLOR;
     }
-    ctx.fillRect(currentStartX, currentStartY + 88, BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
+    ctx.fillRect(currentStartX, currentStartY + PADDING_ON_TOP + 3, BAR_WIDTH, (BAR_HEIGHT * times[i]) / maxTime);
   }
 };
