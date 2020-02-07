@@ -1,5 +1,5 @@
 'use strict';
-//-------------объявления/переменные-----------------------//
+// -------------объявления/переменные-----------------------//
 var WIZARD_NAMES = ['Дамблдор', 'Волдеморт', 'Доктор Стрендж', 'Гарри Поттер'];
 var wizards = [
   {
@@ -30,18 +30,18 @@ var wizards = [
 
 var fragment = document.createDocumentFragment();
 
-//диалоговое окно:
+// диалоговое окно:
 var userDialog = document.querySelector('.overlay');
-//нижняя часть диалогового окна, где будут размещены персонажи:
+// нижняя часть диалогового окна, где будут размещены персонажи:
 var footerData = document.querySelector('.setup-similar');
-//здесь будем размещать похожих персонажей:
+// здесь будем размещать похожих персонажей:
 var elementList = userDialog.querySelector('.setup-similar-list');
-//находим шаблон и из него находим div с 'волшебниками', который будем копировать:
+// находим шаблон и из него находим div с 'волшебниками', который будем копировать:
 var wizardTmpl = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
 
-//-------------основная часть-----------------------//
+// -------------основная часть-----------------------//
 
-//добавляем свойства конкретной единице 'волшебника':
+// добавляем свойства конкретной единице 'волшебника':
 var renderWizard = function (wizard) {
   var item = wizardTmpl.cloneNode(true);
   item.querySelector('.setup-similar-label').textContent = wizard.name;
@@ -52,14 +52,14 @@ var renderWizard = function (wizard) {
   return item;
 };
 
-//создаём 'волшебников' по количеству массива wizards и...
-//добавляем в фрагмент (чтобы не возникло ненужных перерисовок):
+// создаём 'волшебников' по количеству массива wizards и...
+// добавляем в фрагмент (чтобы не возникло ненужных перерисовок):
 for (var i = 0; i < wizards.length; i++) {
   fragment.appendChild(renderWizard(wizards[i]));
 }
 
 elementList.appendChild(fragment);
 
-//теперь можно показать окно с персонажами:
+// теперь можно показать окно с персонажами:
 userDialog.classList.remove('hidden');
 footerData.classList.remove('hidden');
