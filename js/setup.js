@@ -6,9 +6,8 @@ var KEY_ENTER = 'Enter';
 var TOTAL_WIZARDS = 4;
 
 var WIZARD_NAMES = ['Rabbit Helpless', 'Dreaded Foal', 'Desire Kit', 'Angel Dusty', 'Sweety Frozen', 'Heavy Wombat', 'Lost Puma', 'Vital Panda', 'Rolling Sun', 'Steel Runny', 'Young Fox', 'Needless Volunteer', 'Chipmunk Cult', 'Indigo Puppy'];
-var COATS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)',];
-var EYES = ['black', 'red', 'blue', 'yellow', 'green','lightblue', 'gray', 'olive', 'teal', 'darkgoldenrod', 'sienna', 'burlywood', 'azure', 'lightyellow',];
-var SKIN = ['saddlebrown', 'brown', 'chocolate', 'darkgoldenrod', 'tan', 'burlywood', 'wheat', 'cornsilk', 'indianred',];
+var COATS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
+var EYES = ['black', 'red', 'blue', 'yellow', 'green', 'lightblue', 'gray', 'olive', 'teal', 'darkgoldenrod', 'sienna', 'burlywood', 'azure', 'lightyellow'];
 var wizards = [];
 
 var fragment = document.createDocumentFragment();
@@ -76,12 +75,12 @@ setupClose.addEventListener('keydown', function (evt) {
 
 // удаляет класс 'hidden', открывая, таким образом, переданное окно-элемент:
 var showWindow = function (item) {
-    item.classList.remove('hidden');
+  item.classList.remove('hidden');
 };
 
 // -------------Проверка валидности поля ввода имени пользователя-----------------------//
 
-setupUserName.addEventListener('invalid', function (evt) {
+setupUserName.addEventListener('invalid', function () {
   if (setupUserName.validity.toShort) {
     setupUserName.setCustomValidity('Введите не менее 2х символов');
   } else if (setupUserName.validity.tooLong) {
@@ -124,7 +123,7 @@ var createCollectionOfWizards = function (array, totalWizards) {
     });
   }
 
-  return  array;
+  return array;
 };
 
 // добавляем свойства конкретной единице 'волшебника':
