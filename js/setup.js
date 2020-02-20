@@ -104,10 +104,16 @@ var getRandomHSL = function () {
 
 // Находит случайное имя в массиве:
 var getRandomInstance = function (array) {
-  var instance = Math.floor(Math.random() * array.length);
-  // Удаляем имя из массива, чтобы оно больше не повторялось:
-  array.splice(instance, 1);
-  return array[instance];
+  var randomItem = Math.floor(Math.random() * array.length);
+  // этот экземпляр будем возвращать:
+  var instance = array[randomItem];
+  // но! должен оставаться хотя бы один элемент:
+  if (array.length > 1) {
+    // Удаляем имя из массива, чтобы оно больше не повторялось:
+    array.splice(randomItem, 1);
+  }
+
+  return instance;
 };
 
 // -------------Кастомизация изображений-----------------------//
@@ -137,8 +143,7 @@ var setPropertiesToWizard = function (wizard) {
   return item;
 };
 
-// создаём 'волшебников' по количеству массива wizards и...
-// добавляем в фрагмент (чтобы не возникло ненужных перерисовок):
+// создаём 'волшебников' по количеству массива wizards и добавляем в фрагмент, а затем и в DOM:
 var addCollectionToDOM = function (arrayOfWizards) {
   for (var i = 0; i < arrayOfWizards.length; i++) {
     var item = setPropertiesToWizard(arrayOfWizards[i]);
