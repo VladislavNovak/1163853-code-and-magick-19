@@ -8,92 +8,32 @@ var TOTAL_WIZARDS = 4;
 var WIZARD_NAMES = ['Rabbit Helpless', 'Dreaded Foal', 'Desire Kit', 'Angel Dusty', 'Sweety Frozen', 'Heavy Wombat', 'Lost Puma', 'Vital Panda', 'Rolling Sun', 'Steel Runny', 'Young Fox', 'Needless Volunteer', 'Chipmunk Cult', 'Indigo Puppy'];
 var COATS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
 var EYES = ['black', 'red', 'blue', 'yellow', 'green', 'lightblue', 'gray', 'olive', 'teal', 'darkgoldenrod', 'sienna', 'burlywood', 'azure', 'lightyellow'];
-var wizards = [];
+var FIREBALL = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 
-var fragment = document.createDocumentFragment();
-// диалоговое окно:
-var userDialog = document.querySelector('.setup');
+// диалоговое окно и его элементы (кнопка закрытия, поле ввода имени):
+var POPUP = document.querySelector('.setup');
+var SETUP_CLOSE = POPUP.querySelector('.setup-close');
+var SETUP_USER_NAME_INPUT = POPUP.querySelector('.setup-user-name');
 // нижняя часть диалогового окна, где будут размещены персонажи:
-var footerData = document.querySelector('.setup-similar');
+var POPUP_BOTTOM_VIEW = POPUP.querySelector('.setup-similar');
 // здесь будем размещать похожих персонажей:
-var setupSimilarList = userDialog.querySelector('.setup-similar-list');
-// находим шаблон и из него находим div с 'волшебниками', который будем копировать:
-var wizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
+var SETUP_SIMILAR_LIST = POPUP.querySelector('.setup-similar-list');
 // кнопка вызова диалогового окна редактирования персонажа:
-var setupOpen = document.querySelector('.setup-open');
-// кнопка закрытия диалогового окна редактирования персонажа:
-var setupClose = userDialog.querySelector('.setup-close');
-// поле ввода имени пользователя:
-var setupUserName = userDialog.querySelector('.setup-user-name');
+var SETUP_OPEN = document.querySelector('.setup-open');
 
-// -------------Обработка нажатия клавиатуры-----------------------//
+// находим шаблон и из него находим div с 'волшебниками', который будем копировать:
+var WIZARD_TEMPLATE = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item');
+var FRAGMENT = document.createDocumentFragment();
 
-var buttonEscapeClosePopupHandler = function (evt) {
-  if (evt.key === KEY_ESCAPE) {
-    closePopup();
-  }
-};
+// 'основной' 'волшебник'
+var MAIN_WIZARD_COAT = POPUP.querySelector('.setup-player').querySelector('.wizard-coat');
+var MAIN_WIZARD_COAT_INPUT = POPUP.querySelector('.setup-player').querySelector('input[name="coat-color"]');
+var MAIN_WIZARD_EYES = POPUP.querySelector('.setup-player').querySelector('.wizard-eyes');
+var MAIN_WIZARD_EYES_INPUT = POPUP.querySelector('.setup-player').querySelector('input[name="eyes-color"]');
+var MAIN_WIZARD_FIREBALL = POPUP.querySelector('.setup-player').querySelector('.setup-fireball');
+var MAIN_WIZARD_FIREBALL_INPUT = POPUP.querySelector('.setup-player').querySelector('input[name="fireball-color"]');
 
-// скрывает окно диалога
-var openPopup = function () {
-  userDialog.classList.remove('hidden');
-
-  // Когда окно настройки персонажа открыто, нажатие на клавишу ESC закрывает диалог:
-  document.addEventListener('keydown', buttonEscapeClosePopupHandler);
-};
-
-// открывает окно диалога
-var closePopup = function () {
-  userDialog.classList.add('hidden');
-};
-
-// Окно диалога открыватеся по нажатию на блок .setup-open (удаляем класс hidden):
-setupOpen.addEventListener('click', function () {
-  openPopup();
-});
-
-// Когда в фокусе .setup-open-icon (иконка пользователя), то окно настройки персонажа открывается по нажатию ENTER:
-setupOpen.addEventListener('keydown', function (evt) {
-  if (evt.key === KEY_ENTER) {
-    openPopup();
-  }
-});
-
-// Окно .setup закрывается по нажатию на элемент .setup-close, расположенный внутри окна
-setupClose.addEventListener('click', function () {
-  closePopup();
-});
-
-// Если окно открыто и фокус находится на кнопке закрытия окна, то нажатие клавиши ENTER должно приводить к закрытию диалога:
-setupClose.addEventListener('keydown', function (evt) {
-  if (evt.key === KEY_ENTER) {
-    closePopup();
-  }
-});
-
-// -------------DOM - операции-----------------------//
-
-// удаляет класс 'hidden', открывая, таким образом, переданное окно-элемент:
-var showWindow = function (item) {
-  item.classList.remove('hidden');
-};
-
-// -------------Проверка валидности поля ввода имени пользователя-----------------------//
-
-setupUserName.addEventListener('invalid', function () {
-  if (setupUserName.validity.toShort) {
-    setupUserName.setCustomValidity('Введите не менее 2х символов');
-  } else if (setupUserName.validity.tooLong) {
-    setupUserName.setCustomValidity('Введите не более 25и символов');
-  } else if (setupUserName.validity.valueMissing) {
-    setupUserName.setCustomValidity('Необходимо ввести не менее 2х и не более 25и символов');
-  } else {
-    // сбрасываем сообщение об ошибке, если значение стало корректно:
-    setupUserName.setCustomValidity('');
-  }
-});
-
-// -------------Функции обработки-----------------------//
+// -------------Общие функции обработки-----------------------//
 
 var getRandomHSL = function () {
   var h = Math.floor(Math.random() * 360);
@@ -119,7 +59,8 @@ var getRandomInstance = function (array) {
 // -------------Кастомизация изображений-----------------------//
 
 // Создаём массив с волшебниками и заполняем соответствующие свойства:
-var createCollectionOfWizards = function (array, totalWizards) {
+var createWizardDatabase = function (totalWizards) {
+  var array = [];
   for (var i = 0; i < totalWizards; i++) {
     array.push({
       name: getRandomInstance(WIZARD_NAMES),
@@ -132,9 +73,9 @@ var createCollectionOfWizards = function (array, totalWizards) {
   return array;
 };
 
-// добавляем свойства конкретной единице 'волшебника':
+// клонируем шаблон из DOM и добавляем свойства конкретной единице 'волшебника':
 var setPropertiesToWizard = function (wizard) {
-  var item = wizardTemplate.cloneNode(true);
+  var item = WIZARD_TEMPLATE.cloneNode(true);
   item.querySelector('.setup-similar-label').textContent = wizard.name;
   item.querySelector('.wizard-coat').style.fill = wizard.coatColor;
   item.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
@@ -147,16 +88,125 @@ var setPropertiesToWizard = function (wizard) {
 var addCollectionToDOM = function (arrayOfWizards) {
   for (var i = 0; i < arrayOfWizards.length; i++) {
     var item = setPropertiesToWizard(arrayOfWizards[i]);
-    fragment.appendChild(item);
+    FRAGMENT.appendChild(item);
   }
 
-  setupSimilarList.appendChild(fragment);
+  SETUP_SIMILAR_LIST.appendChild(FRAGMENT);
+  POPUP_BOTTOM_VIEW.classList.remove('hidden');
 };
 
 // -------------Исполняемая часть программы-----------------------//
 
-var collectionOfWizards = createCollectionOfWizards(wizards, TOTAL_WIZARDS);
+// создает базу с данными 'волшебников'
+var collectionOfWizards = createWizardDatabase(TOTAL_WIZARDS);
+// заполняет DOM-элементы данными из базы с 'волшебниками'
 addCollectionToDOM(collectionOfWizards);
 
-showWindow(footerData);
-showWindow(userDialog);
+// -------------Взаимодействие с окном POPUP-----------------------//
+
+// есть ли на SETUP_USER_NAME_INPUT фокус
+var isFocusInput = false;
+
+SETUP_USER_NAME_INPUT.addEventListener('focus', function () {
+  isFocusInput = true;
+});
+
+SETUP_USER_NAME_INPUT.addEventListener('blur', function () {
+  isFocusInput = false;
+});
+
+// если нажата ESC и нет фокуса на инпуте, то окно можно зактыть:
+var onPopupPressEscape = function (evt) {
+  if (evt.key === KEY_ESCAPE && !isFocusInput) {
+    closePopup();
+  }
+};
+
+// открывает окно диалога
+var openPopup = function () {
+  POPUP.classList.remove('hidden');
+  // Когда окно настройки персонажа открыто, нажатие на клавишу ESC закрывает диалог:
+  document.addEventListener('keydown', onPopupPressEscape);
+};
+
+// закрывает окно диалога
+var closePopup = function () {
+  POPUP.classList.add('hidden');
+  // Когда окно настройки персонажа открыто, нажатие на клавишу ESC закрывает диалог:
+  document.addEventListener('keydown', onPopupPressEscape);
+};
+
+// POPUP открыватеся по нажатию на блок .setup-open (удаляем класс hidden):
+SETUP_OPEN.addEventListener('click', function () {
+  openPopup();
+});
+
+// Когда SETUP_OPEN (иконка пользователя) в фокусе, то...
+SETUP_OPEN.addEventListener('keydown', function (evt) {
+  // окно настройки персонажа открывается по нажатию ENTER:
+  if (evt.key === KEY_ENTER) {
+    openPopup();
+  }
+});
+
+// POPUP закрывается по нажатию на элемент .setup-close, расположенный внутри окна
+SETUP_CLOSE.addEventListener('click', function () {
+  closePopup();
+});
+
+// Если POPUP открыт и фокус находится на кнопке закрытия окна, то...
+SETUP_CLOSE.addEventListener('keydown', function (evt) {
+  // нажатие клавиши ENTER должно приводить к закрытию диалога:
+  if (evt.key === KEY_ENTER) {
+    closePopup();
+  }
+});
+
+// -------------Взаимодействие с основным 'волшебником'-----------------------//
+
+// последовательно для coat, eyes, fireball:
+// находим один из цветов, закрашиваем div, заполняем input для отправки на сервер:
+var setNewCoatColor = function () {
+  var color = getRandomInstance(COATS);
+  MAIN_WIZARD_COAT.style.fill = color;
+  MAIN_WIZARD_COAT_INPUT.value = color;
+};
+
+var setNewEyesColor = function () {
+  var color = getRandomInstance(EYES);
+  MAIN_WIZARD_EYES.style.fill = color;
+  MAIN_WIZARD_EYES_INPUT.value = color;
+};
+
+var setNewFireballColor = function () {
+  var color = getRandomInstance(FIREBALL);
+  MAIN_WIZARD_FIREBALL.style.backgroundColor = color;
+  MAIN_WIZARD_FIREBALL_INPUT.value = color;
+};
+
+MAIN_WIZARD_COAT.addEventListener('click', function () {
+  setNewCoatColor();
+});
+
+MAIN_WIZARD_EYES.addEventListener('click', function () {
+  setNewEyesColor();
+});
+
+MAIN_WIZARD_FIREBALL.addEventListener('click', function () {
+  setNewFireballColor();
+});
+
+// -------------Проверка валидности поля ввода имени пользователя-----------------------//
+
+SETUP_USER_NAME_INPUT.addEventListener('invalid', function () {
+  if (SETUP_USER_NAME_INPUT.validity.toShort) {
+    SETUP_USER_NAME_INPUT.setCustomValidity('Введите не менее 2х символов');
+  } else if (SETUP_USER_NAME_INPUT.validity.tooLong) {
+    SETUP_USER_NAME_INPUT.setCustomValidity('Введите не более 25и символов');
+  } else if (SETUP_USER_NAME_INPUT.validity.valueMissing) {
+    SETUP_USER_NAME_INPUT.setCustomValidity('Необходимо ввести не менее 2х и не более 25и символов');
+  } else {
+    // сбрасываем сообщение об ошибке, если значение стало корректно:
+    SETUP_USER_NAME_INPUT.setCustomValidity('');
+  }
+});
