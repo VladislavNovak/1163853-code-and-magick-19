@@ -7,17 +7,18 @@
   var StatusCode = {
     OK: 200,
   };
-  // ------------Отправляет данные на сервер-----------------------------------------------------
+  // ------------Получение данных с сервера-----------------------------------------------------
   // функция отправляет данные игрока на сервер, обрабатывает ошибки и скрывает форму редактирования персонажа:
   var load = function (onSuccess, onError) {
-    // адрес сервера, на который должны отправиться данные:
+    // адрес сервера, с которого должны получить данные:
     var URLToLoad = 'https://js.dump.academy/code-and-magick/data';
 
     var httpRequest = new XMLHttpRequest();
     httpRequest.responseType = 'json';
 
     httpRequest.addEventListener('load', function () {
-      if (httpRequest === StatusCode.OK) {
+      // if (httpRequest === StatusCode.OK) {
+      if (httpRequest.status === 200) {
         onSuccess(httpRequest.response);
       } else {
         // onError — функция обратного вызова, которая срабатывает при неуспешном выполнении запроса.
@@ -42,6 +43,7 @@
 
   // -------Загрузка данных на сервер (сохранение данных формы)----------------------------------------------------
   var save = function (data, onSuccess, onError) {
+    // адрес сервера, на который должны отправиться данные:
     var URLToSave = 'https://js.dump.academy/code-and-magick';
 
     var httpRequest = new XMLHttpRequest();
@@ -50,7 +52,7 @@
     // onLoad — функция обратного вызова, которая срабатывает при успешном выполнении запроса
     // При вызове функции onLoad в её единственный параметр передаётся набор полученных данных:
     httpRequest.addEventListener('load', function () {
-      if (httpRequest === StatusCode.OK) {
+      if (httpRequest.status === StatusCode.OK) {
         onSuccess(httpRequest.response);
       } else {
         // onError — функция обратного вызова, которая срабатывает при неуспешном выполнении запроса.
