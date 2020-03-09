@@ -12,6 +12,7 @@
   var setupUserNameInput = popup.querySelector('.setup-user-name');
   // кнопка вызова диалогового окна редактирования персонажа:
   var setupOpen = document.querySelector('.setup-open');
+  var form = popup.querySelector('.setup-wizard-form');
 
   // флаг: есть ли на setupUserNameInput фокус:
   var isFocusInput = false;
@@ -129,5 +130,13 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  });
+
+  // --------------сохранение формы (и отправка на сервер) при нажатии на submit----------------
+  form.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(form), function () {
+      popup.classList.add('hidden');
+    });
+    evt.preventDefault();
   });
 })();
